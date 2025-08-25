@@ -1467,8 +1467,15 @@ Agora, crie o plano para o seguinte aluno:
                 
                 toggleSpinner(true, "A IA está a criar um treino avançado...");
                 try {
-                    // IMPORTANTE: Substitua "SUA_CHAVE_API_VALIDA_AQUI" pela sua chave de API do Google AI Studio.
-                    const apiKey = "SUA_CHAVE_API_VALIDA_AQUI"; 
+                    // =================================================================================
+                    // =================================================================================
+                    //      IMPORTANTE: Substitua a linha abaixo pela sua chave de API do Google AI.
+                    //      Obtenha a sua em: https://aistudio.google.com/app/apikey
+                    // =================================================================================
+                    const apiKey = "AIzaSyDxrHpdFc0OLDv8weg8B5iwqfUQpVbryao"; 
+                    // =================================================================================
+                    // =================================================================================
+
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
                     const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", responseSchema: schema } };
                     const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -1500,7 +1507,7 @@ Agora, crie o plano para o seguinte aluno:
                     showNotification("Sugestão de treino gerada! Reveja e ajuste se necessário.");
                 } catch (error) {
                     console.error("Erro ao gerar treino com IA:", error);
-                    showNotification(error.message || "A IA não conseguiu gerar o treino. Tente novamente.", "error");
+                    showNotification(error.message || "A IA não conseguiu gerar o treino. Verifique se a sua Chave de API é válida.", "error");
                 } finally {
                     toggleSpinner(false);
                 }
