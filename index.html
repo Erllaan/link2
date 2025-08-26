@@ -54,8 +54,8 @@
         <div id="publicContent">
              <h1 class="text-center text-primary-blue text-3xl md:text-4xl font-bold mb-2 pb-4 border-b border-border-light drop-shadow-md">Plano de Treino</h1>
              <div id="publicHeader" class="text-center mb-6">
-                <h2 id="publicAlunoNome" class="text-2xl font-semibold text-text-light"></h2>
-                <p id="publicTrainerInfo" class="text-sm text-text-muted"></p>
+                 <h2 id="publicAlunoNome" class="text-2xl font-semibold text-text-light"></h2>
+                 <p id="publicTrainerInfo" class="text-sm text-text-muted"></p>
              </div>
              <div id="publicTreinoContainer" class="space-y-6"></div>
         </div>
@@ -128,8 +128,10 @@
 
         <!-- Conteúdo Principal da Aplicação -->
         <div id="appContent" class="hide">
-            <div class="text-right mb-4 flex justify-end items-center">
-                <span id="userInfo" class="text-text-muted text-sm mr-4"></span>
+            <div class="text-right mb-4 flex justify-end items-center gap-2">
+                <span id="userInfo" class="text-text-muted text-sm mr-2"></span>
+                <!-- NOVO BOTÃO: Editar Perfil -->
+                <button id="btnEditProfile" class="py-2 px-4 text-sm bg-btn-secondary text-white rounded-lg font-semibold">Editar Perfil</button>
                 <button id="btnLogout" class="py-2 px-4 text-sm bg-btn-danger text-white rounded-lg font-semibold">Sair</button>
             </div>
 
@@ -195,7 +197,7 @@
                     <h2 class="text-xl md:text-2xl font-semibold text-primary-blue pb-2 border-b border-border-light">1. Defina os Parâmetros</h2>
                     <input type="text" id="nome_aluno_form" class="w-full p-4 rounded-lg border border-border-light bg-bg-container text-text-light text-lg" disabled>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div>
                             <label for="dificuldade" class="block mb-2 text-text-muted">Nível:</label>
                             <select id="dificuldade" class="w-full p-3 rounded-lg border border-border-light bg-bg-container text-text-light">
@@ -216,10 +218,21 @@
                         <div>
                             <label for="dias_semana" class="block mb-2 text-text-muted">Dias/Semana:</label>
                             <select id="dias_semana" class="w-full p-3 rounded-lg border border-border-light bg-bg-container text-text-light">
+                                <option value="1">1 dia (Avulso)</option>
                                 <option value="3">3 dias</option>
                                 <option value="4">4 dias</option>
                                 <option value="5">5 dias</option>
                                 <option value="6">6 dias</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="duracao_treino" class="block mb-2 text-text-muted">Duração:</label>
+                            <select id="duracao_treino" class="w-full p-3 rounded-lg border border-border-light bg-bg-container text-text-light">
+                                <option value="N/A" selected>Padrão</option>
+                                <option value="30 minutos">~30 min</option>
+                                <option value="45 minutos">~45 min</option>
+                                <option value="60 minutos">~60 min</option>
+                                <option value="90 minutos">~90 min</option>
                             </select>
                         </div>
                     </div>
@@ -318,6 +331,27 @@
                 </div>
                 <div><label for="alunoObjetivo" class="block text-text-muted">Objetivo Principal:</label><input type="text" id="alunoObjetivo" class="w-full p-3 rounded-lg border border-border-light bg-background-dark text-text-light" required></div>
                 <div class="mt-6 flex justify-end"><button type="submit" class="py-3 px-6 text-lg bg-btn-primary text-white rounded-lg font-semibold">Guardar Aluno</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- NOVO MODAL: Editar Perfil do Treinador -->
+    <div id="editProfileModal" class="modal fixed inset-0 z-50 flex justify-center items-center p-4 hide">
+        <div class="modal-content bg-bg-container p-6 rounded-xl shadow-2xl border border-border-light w-full max-w-lg relative">
+            <span id="closeEditProfileModal" class="absolute top-4 right-4 text-2xl font-bold text-text-muted cursor-pointer">&times;</span>
+            <h3 class="text-2xl font-semibold text-text-light mb-4">Editar Perfil</h3>
+            <form id="editProfileForm" class="space-y-4">
+                <div>
+                    <label for="editNameInput" class="block text-text-muted">Nome Completo:</label>
+                    <input type="text" id="editNameInput" class="w-full p-3 rounded-lg border border-border-light bg-background-dark text-text-light" required>
+                </div>
+                <div>
+                    <label for="editDisplayNameInput" class="block text-text-muted">Como quer ser chamado(a):</label>
+                    <input type="text" id="editDisplayNameInput" class="w-full p-3 rounded-lg border border-border-light bg-background-dark text-text-light" required>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button type="submit" class="py-3 px-6 text-lg bg-btn-primary text-white rounded-lg font-semibold">Guardar Alterações</button>
+                </div>
             </form>
         </div>
     </div>
@@ -543,14 +577,19 @@
                 }
                 
                 let exerciciosHTML = dia.exercicios.map(ex => {
-                    const videoLink = ex.videoUrl ? `<a href="${ex.videoUrl}" target="_blank" class="ml-2 hover:opacity-75">${youtubeIcon}</a>` : '';
+                    const nomeExercicioComVideo = ex.videoUrl 
+                        ? `<a href="${ex.videoUrl}" target="_blank" class="flex items-center text-primary-blue hover:underline">
+                               <span>${ex.nome}</span>
+                               <span class="ml-2">${youtubeIcon}</span>
+                           </a>` 
+                        : `<span>${ex.nome}</span>`;
+
                     const obsHTML = ex.obs ? `<tr class="bg-background-dark"><td colspan="4" class="text-xs text-primary-blue pt-1 pb-2 px-2">${ex.obs}</td></tr>` : '';
 
                     return `
                         <tr class="border-b border-border-light">
-                            <td class="py-2 px-2 flex items-center">
-                                <span>${ex.nome}</span>
-                                ${videoLink}
+                            <td class="py-2 px-2">
+                                ${nomeExercicioComVideo}
                             </td>
                             <td class="py-2 px-2 text-center">${ex.series || '-'}</td>
                             <td class="py-2 px-2 text-center">${ex.reps || '-'}</td>
@@ -665,6 +704,14 @@
             const closeShareLinkModal = document.getElementById('closeShareLinkModal');
             const shareableLinkInput = document.getElementById('shareableLinkInput');
             const btnCopyLink = document.getElementById('btnCopyLink');
+            
+            // NOVOS ELEMENTOS DOM para Edição de Perfil
+            const btnEditProfile = document.getElementById('btnEditProfile');
+            const editProfileModal = document.getElementById('editProfileModal');
+            const closeEditProfileModal = document.getElementById('closeEditProfileModal');
+            const editProfileForm = document.getElementById('editProfileForm');
+            const editNameInput = document.getElementById('editNameInput');
+            const editDisplayNameInput = document.getElementById('editDisplayNameInput');
 
             const iconEye = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.01 9.963 7.182.373.836-.018 1.76-.942 1.956a1.012 1.012 0 01-1.258-.453C18.663 15.045 15.564 18 12 18c-3.564 0-6.663-2.955-8.22-5.468z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`;
             const iconEyeSlash = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.243 4.243l-4.243-4.243" /></svg>`;
@@ -686,25 +733,9 @@
                     telaLogin.classList.add('hide');
                     telaCadastro.classList.add('hide');
                     appContent.classList.remove('hide');
-
-                    try {
-                        let nome = userName.split(' ')[0];
-                        const hora = new Date().getHours();
-                        let saudacao = "Olá";
-                        if (hora >= 5 && hora < 12) { saudacao = "Bom dia"; }
-                        else if (hora >= 12 && hora < 18) { saudacao = "Boa tarde"; }
-                        else { saudacao = "Boa noite"; }
-
-                        mensagemBoasVindas.textContent = `${saudacao}, ${nome}!`;
-                        mostrarTela('telaBoasVindas');
-
-                    } catch (error) {
-                        console.error("Erro ao buscar dados do utilizador:", error);
-                        if (error.code === 'permission-denied') {
-                            showNotification("Erro de permissão. Verifique as regras do Firebase.", "error");
-                        }
-                        mostrarTela('telaAlunos');
-                    }
+                    
+                    updateWelcomeMessage();
+                    mostrarTela('telaBoasVindas');
 
                 } else {
                     appState.currentUser = null;
@@ -770,6 +801,78 @@
                 }
                 showNotification(message, 'error');
             }
+
+            // --- LÓGICA DE PERFIL DO TREINADOR ---
+            btnEditProfile.addEventListener('click', async () => {
+                if (!appState.currentUser) return;
+                toggleSpinner(true, "A carregar perfil...");
+                try {
+                    const userDocRef = doc(db, "usuarios", appState.currentUser.uid);
+                    const docSnap = await getDoc(userDocRef);
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        editNameInput.value = userData.nome || '';
+                        editDisplayNameInput.value = userData.nomeExibicao || '';
+                        editProfileModal.classList.remove('hide');
+                    } else {
+                        showNotification("Não foi possível encontrar os dados do perfil.", "error");
+                    }
+                } catch (error) {
+                    showNotification("Erro ao carregar o perfil.", "error");
+                    console.error("Erro ao buscar perfil:", error);
+                } finally {
+                    toggleSpinner(false);
+                }
+            });
+
+            closeEditProfileModal.addEventListener('click', () => editProfileModal.classList.add('hide'));
+
+            editProfileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!appState.currentUser) return;
+
+                const newName = editNameInput.value.trim();
+                const newDisplayName = editDisplayNameInput.value.trim();
+
+                if (!newName || !newDisplayName) {
+                    showNotification("Ambos os campos são obrigatórios.", "error");
+                    return;
+                }
+
+                toggleSpinner(true, "A guardar alterações...");
+                try {
+                    const userDocRef = doc(db, "usuarios", appState.currentUser.uid);
+                    await updateDoc(userDocRef, {
+                        nome: newName,
+                        nomeExibicao: newDisplayName
+                    });
+
+                    // Atualiza o estado local para refletir a mudança imediatamente
+                    appState.currentUser.displayName = newDisplayName;
+                    updateWelcomeMessage();
+
+                    showNotification("Perfil atualizado com sucesso!");
+                    editProfileModal.classList.add('hide');
+
+                } catch (error) {
+                    showNotification("Erro ao guardar as alterações.", "error");
+                    console.error("Erro ao atualizar perfil:", error);
+                } finally {
+                    toggleSpinner(false);
+                }
+            });
+            
+            function updateWelcomeMessage() {
+                if (!appState.currentUser) return;
+                let nome = appState.currentUser.displayName.split(' ')[0];
+                const hora = new Date().getHours();
+                let saudacao = "Olá";
+                if (hora >= 5 && hora < 12) { saudacao = "Bom dia"; }
+                else if (hora >= 12 && hora < 18) { saudacao = "Boa tarde"; }
+                else { saudacao = "Boa noite"; }
+                mensagemBoasVindas.textContent = `${saudacao}, ${nome}!`;
+            }
+
 
             // --- LÓGICA DE ALUNOS ---
             btnIrParaAlunos.addEventListener('click', () => {
@@ -983,7 +1086,7 @@
                     toggleSpinner(false);
                 }
             }
-                
+                    
             // --- LÓGICA DE ACOMPANHAMENTO ---
             btnAcompanharEvolucao.addEventListener('click', () => {
                 if (!appState.alunoSelecionado) return;
@@ -1331,6 +1434,7 @@
             btnVoltarForm.addEventListener('click', () => mostrarTela('treinoForm'));
 
             const divisoesSugeridas = {
+                '1': ['Full Body (Corpo Inteiro)', 'Treino Específico (Ex: Só Pernas)'],
                 '3': ['ABC (Peito-Ombro-Tríceps / Costas-Bíceps / Pernas)', 'Full Body (Corpo Inteiro 3x)'],
                 '4': ['Upper/Lower (Superiores/Inferiores 2x)', 'ABCD (Ex: Peito / Costas / Pernas / Ombros)'],
                 '5': ['ABCDE (Push/Pull/Legs/Upper/Lower)', 'ABCAB (Ex: Peito-Tríceps / Costas-Bíceps / Pernas / Repete A e B)'],
@@ -1338,6 +1442,7 @@
             };
 
             const divisoesSugeridasFeminino = {
+                '1': ['Full Body (Foco em Glúteos)', 'Inferiores Completo'],
                 '3': ['Inferior/Superior/Full Body', 'ABC (Foco Inferiores: Posterior/Glúteo / Quadríceps / Superiores)'],
                 '4': ['Inferior/Superior/Inferior/Superior', 'ABCD (Posterior/Glúteo / Superiores A / Quadríceps / Superiores B)'],
                 '5': ['Inferior/Superior/Inferior/Superior/Inferior', 'ABCDE (Posterior / Quadríceps / Superiores Push / Glúteo / Superiores Pull)'],
@@ -1365,6 +1470,7 @@
             btnGerarComIA.addEventListener('click', async () => {
                 if (!appState.alunoSelecionado) return;
                 
+                const duracaoTreino = document.getElementById('duracao_treino').value;
                 const incluirTecnicas = document.getElementById('incluir_tecnicas').checked && dificuldadeSelect.value !== 'Iniciante';
                 const musculoEnfase = document.getElementById('musculo_enfase').value.trim();
                 const incluirDicas = document.getElementById('incluir_dicas').checked;
@@ -1415,8 +1521,11 @@ Agora, crie o plano para o seguinte aluno:
 - Nível: ${dificuldadeSelect.value}
 - Objetivo Principal: ${document.getElementById('objetivo').value}
 - Frequência: ${diasSemanaSelect.value} dias por semana
-- Divisão de Treino Sugerida: ${divisaoTreinoSelect.value}
-- Para cada dia no plano_semanal, inclua o campo "grupos_musculares" com uma string descrevendo os músculos trabalhados (ex: "Peito, Ombro e Tríceps").`;
+- Divisão de Treino Sugerida: ${divisaoTreinoSelect.value}`;
+
+                if (duracaoTreino !== 'N/A') {
+                    prompt += `\n- **Duração Máxima por Sessão:** ${duracaoTreino}. O treino deve ser estruturado para ser concluído dentro deste tempo, ajustando o número de exercícios, séries e descansos.`;
+                }
 
                 if (incluirTecnicas) {
                     prompt += `\n- **Técnicas Avançadas:** Incorpore as técnicas conforme a regra principal (máximo de duas por dia).`;
@@ -1476,7 +1585,7 @@ Agora, crie o plano para o seguinte aluno:
                     // =================================================================================
                     // =================================================================================
 
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
                     const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", responseSchema: schema } };
                     const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                     
@@ -1739,7 +1848,7 @@ Agora, crie o plano para o seguinte aluno:
                     container.innerHTML = '';
                     querySnapshot.forEach(doc => {
                         const treino = doc.data();
-                        const data = treino.criadoEm ? new Date(treino.criadoEm.seconds * 1000).toLocaleDateString() : 'sem data';
+                        const data = treino.criadoEm ? new Date(treino.criadoEm.seconds * 1000).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '') : 'sem data';
                         
                         const gruposMusculares = treino.dias && treino.dias.length > 0
                             ? [...new Set(treino.dias.map(dia => dia.musculos.split(/, | e /)[0].trim()))].slice(0, 3).join(', ') + (treino.dias.length > 3 ? '...' : '')
