@@ -130,7 +130,6 @@
         <div id="appContent" class="hide">
             <div class="text-right mb-4 flex justify-end items-center gap-2">
                 <span id="userInfo" class="text-text-muted text-sm mr-2"></span>
-                <!-- NOVO BOTÃO: Editar Perfil -->
                 <button id="btnEditProfile" class="py-2 px-4 text-sm bg-btn-secondary text-white rounded-lg font-semibold">Editar Perfil</button>
                 <button id="btnLogout" class="py-2 px-4 text-sm bg-btn-danger text-white rounded-lg font-semibold">Sair</button>
             </div>
@@ -1759,9 +1758,20 @@ Agora, crie o plano para o seguinte aluno:
                     const musculosUnicos = [...new Set(todosMusculos)].join(' • ');
                     container.innerHTML += `<div class="mb-6 bg-bg-container p-4 rounded-lg border border-border-light"><h4 class="font-bold text-primary-blue mb-2">Foco da Semana:</h4><p class="text-text-light">${musculosUnicos}</p></div>`;
                 }
+                
+                // CORREÇÃO: Adicionado o ícone do YouTube também na pré-visualização
+                const youtubeIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-red-500"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" /></svg>`;
 
                 appState.treinoSemanal.forEach(dia => {
-                    let exerciciosHTML = dia.exercicios.map(ex => `<li class="flex justify-between items-start text-text-muted border-b border-border-light py-2 gap-2"><span class="flex-1">${ex.nome}</span><span class="text-right whitespace-nowrap">${ex.series || '-' }x${ex.reps || '-'} | ${ex.descanso || '-'} | ${ex.obs || '-'}</span></li>`).join('');
+                    let exerciciosHTML = dia.exercicios.map(ex => {
+                        const videoIconHTML = ex.videoUrl ? `<span class="ml-2">${youtubeIcon}</span>` : '';
+                        const nomeComIcone = `<div class="flex items-center">${ex.nome}${videoIconHTML}</div>`;
+                        
+                        return `<li class="flex justify-between items-center text-text-muted border-b border-border-light py-2 gap-2">
+                                    <span class="flex-1">${nomeComIcone}</span>
+                                    <span class="text-right whitespace-nowrap">${ex.series || '-' }x${ex.reps || '-'} | ${ex.descanso || '-'} | ${ex.obs || '-'}</span>
+                                </li>`;
+                    }).join('');
                     container.innerHTML += `<div class="mb-4"><h3 class="text-xl font-semibold text-text-light border-b-2 border-primary-blue pb-1 mb-2">${dia.nome} <span class="text-base font-normal text-text-muted">- ${dia.musculos}</span></h3><ul class="space-y-1">${exerciciosHTML}</ul></div>`;
                 });
 
