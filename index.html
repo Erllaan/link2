@@ -243,6 +243,13 @@
 
                     <div class="border-t border-border-light pt-4 space-y-4">
                          <h3 class="text-lg font-semibold text-primary-blue">Detalhes Avançados (Opcional)</h3>
+                         
+                         <!-- NOVO CAMPO: Treino em Casa -->
+                         <label class="flex items-center space-x-3 cursor-pointer">
+                             <input type="checkbox" id="treino_em_casa" class="h-5 w-5 rounded bg-bg-container border-border-light text-primary-blue focus:ring-primary-blue">
+                             <span>Treino em Casa (sem equipamento de ginásio)</span>
+                         </label>
+                         
                          <div id="tecnicas_avancadas_container" class="hide">
                              <label class="flex items-center space-x-3 cursor-pointer">
                                  <input type="checkbox" id="incluir_tecnicas" class="h-5 w-5 rounded bg-bg-container border-border-light text-primary-blue focus:ring-primary-blue">
@@ -1471,6 +1478,7 @@
                 if (!appState.alunoSelecionado) return;
                 
                 const duracaoTreino = document.getElementById('duracao_treino').value;
+                const treinoEmCasa = document.getElementById('treino_em_casa').checked;
                 const incluirTecnicas = document.getElementById('incluir_tecnicas').checked && dificuldadeSelect.value !== 'Iniciante';
                 const musculoEnfase = document.getElementById('musculo_enfase').value.trim();
                 const incluirDicas = document.getElementById('incluir_dicas').checked;
@@ -1526,6 +1534,10 @@ Agora, crie o plano para o seguinte aluno:
 
                 if (duracaoTreino !== 'N/A') {
                     prompt += `\n- **Duração Máxima por Sessão:** ${duracaoTreino}. O treino deve ser estruturado para ser concluído dentro deste tempo, ajustando o número de exercícios, séries e descansos.`;
+                }
+                
+                if (treinoEmCasa) {
+                    prompt += `\n- **Local do Treino:** Treino em casa. O plano deve ser adaptado para ser executado sem equipamento de ginásio. Utilize APENAS o peso corporal e itens domésticos comuns (ex: cadeiras, garrafas de água, mochilas com peso). NÃO inclua exercícios que exijam halteres, barras, anilhas ou máquinas de ginásio.`;
                 }
 
                 if (incluirTecnicas) {
