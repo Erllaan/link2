@@ -704,7 +704,6 @@
             const shareableLinkInput = document.getElementById('shareableLinkInput');
             const btnCopyLink = document.getElementById('btnCopyLink');
             
-            // NOVOS ELEMENTOS DOM para Edição de Perfil
             const btnEditProfile = document.getElementById('btnEditProfile');
             const editProfileModal = document.getElementById('editProfileModal');
             const closeEditProfileModal = document.getElementById('closeEditProfileModal');
@@ -801,7 +800,7 @@
                 showNotification(message, 'error');
             }
 
-            // --- LÓGICA DE PERFIL DO TREINADOR ---
+            // --- LÓGICA DE PERFIL DO TREINADOR (CORRIGIDA) ---
             btnEditProfile.addEventListener('click', async () => {
                 if (!appState.currentUser) return;
                 toggleSpinner(true, "A carregar perfil...");
@@ -812,10 +811,12 @@
                         const userData = docSnap.data();
                         editNameInput.value = userData.nome || '';
                         editDisplayNameInput.value = userData.nomeExibicao || '';
-                        editProfileModal.classList.remove('hide');
                     } else {
-                        showNotification("Não foi possível encontrar os dados do perfil.", "error");
+                        // Se o documento não existe, abre o formulário em branco para criação
+                        editNameInput.value = '';
+                        editDisplayNameInput.value = '';
                     }
+                    editProfileModal.classList.remove('hide');
                 } catch (error) {
                     showNotification("Erro ao carregar o perfil.", "error");
                     console.error("Erro ao buscar perfil:", error);
@@ -841,12 +842,12 @@
                 toggleSpinner(true, "A guardar alterações...");
                 try {
                     const userDocRef = doc(db, "usuarios", appState.currentUser.uid);
-                    await updateDoc(userDocRef, {
+                    // Usa setDoc com merge: true para criar o documento se não existir, ou atualizar se já existir.
+                    await setDoc(userDocRef, {
                         nome: newName,
                         nomeExibicao: newDisplayName
-                    });
+                    }, { merge: true });
 
-                    // Atualiza o estado local para refletir a mudança imediatamente
                     appState.currentUser.displayName = newDisplayName;
                     updateWelcomeMessage();
 
@@ -1479,7 +1480,7 @@ Instruções detalhadas obrigatórias:
 
 - Cobertura completa de todos os músculos ao longo da semana: peito, costas, ombros, bíceps, tríceps, quadríceps, glúteos, posteriores, panturrilhas, abdômen, antebraço e trapézio.
 - Exercícios devem ser reais, populares e reconhecidos em academias, usando nomes específicos e equipamento correto (ex: “Supino reto com barra”, “Cadeira extensora”). Não criar variações estranhas ou alternativas múltiplas no mesmo item.
-- **É OBRIGATÓRIO** que para cada exercício, você encontre e inclua um link de um vídeo real e relevante do YouTube que demonstre a execução correta no campo \`videoUrl\`. O link deve ser válido e direto para o vídeo. Priorize vídeos de canais de fitness conhecidos e verificados para garantir a validade dos links. A falha em fornecer um \`videoUrl\` para cada exercício resultará numa resposta inválida.
+- **É OBRATÓRIO** que para cada exercício, você encontre e inclua um link de um vídeo real e relevante do YouTube que demonstre a execução correta no campo \`videoUrl\`. O link deve ser válido e direto para o vídeo. Priorize vídeos de canais de fitness conhecidos e verificados para garantir a validade dos links. A falha em fornecer um \`videoUrl\` para cada exercício resultará numa resposta inválida.
 - Divisão organizada por dias (Treino 01, Treino 02…), indicando músculos principais, exercícios, séries, repetições e técnicas aplicadas. Para séries e repetições, use apenas números e hífens quando necessário (ex: series: "4", reps: "10-12"). Não repita o número de séries no campo de repetições.
 - **Aplicação de Técnicas Avançadas: Se o treino for para nível Intermediário ou Avançado, aplique UMA técnica avançada (como drop set, superset, rest-pause, etc.) em no MÁXIMO DOIS exercícios por dia de treino. Varie a técnica utilizada entre os dias.**
 - Progressão de intensidade de acordo com o nível do aluno (iniciante, intermediário, avançado), ajustando cargas, volume e complexidade do treino.
@@ -1759,7 +1760,6 @@ Agora, crie o plano para o seguinte aluno:
                     container.innerHTML += `<div class="mb-6 bg-bg-container p-4 rounded-lg border border-border-light"><h4 class="font-bold text-primary-blue mb-2">Foco da Semana:</h4><p class="text-text-light">${musculosUnicos}</p></div>`;
                 }
                 
-                // CORREÇÃO: Adicionado o ícone do YouTube também na pré-visualização
                 const youtubeIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-red-500"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" /></svg>`;
 
                 appState.treinoSemanal.forEach(dia => {
